@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h1>test</h1>
     <Header :brands="brands"></Header>
     <BannerTop />
     <Brand :brands="brands"></Brand>
