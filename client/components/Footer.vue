@@ -70,7 +70,7 @@
                     <li><span>Thứ bảy: </span> 10 giờ sáng - 6 giờ chiều</li>
                   </ul>
                   <p class="mail">
-                    <a href="mailto:laptrinhweb@gmail.com">ductinmdt@gmail.com</a>
+                    <a href="mailto:laptrinhweb@gmail.com">laptrinhweb@gmail.com</a>
                   </p>
                 </div>
                 <!-- End Single Widget -->
@@ -118,10 +118,10 @@
                   <h3>Đường dẫn</h3>
                   <ul>
                     <li><a href="http://localhost:3000/">Trang chủ</a></li>
-                    <li><a href="">Giới thiệu</a></li>
+                    <li><a href="http://localhost:3000/introduction">Giới thiệu</a></li>
                     <li><a href="http://localhost:3000/">Sản phẩm</a></li>
-                    <li><a href="javascript:void(0)">Hỗ trợ</a></li>
-                    <li><a href="javascript:void(0)">Liên hệ</a></li>
+                    <li><a href="javascript:void(0)">Bài viết</a></li>
+                    <li><a href="http://localhost:3000/feedback">Liên hệ</a></li>
                   </ul>
                 </div>
                 <!-- End Single Widget -->

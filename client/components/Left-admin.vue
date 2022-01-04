@@ -9,7 +9,7 @@
       </div>
       <div>
         <i class="fas fa-user"></i>
-        <a href="">
+        <a >
           <span>User</span>
         </a>
       </div>
@@ -27,14 +27,8 @@
       </div>
       <div>
         <i class="fas fa-envelope-open-text"></i>
-        <a href="">
-          <span>Messages</span>
-        </a>
-      </div>
-      <div>
-        <i class="fas fa-user-cog"></i>
-        <a href="">
-          <span>Information Admin</span>
+        <a href="/admin/feedback">
+          <span>Feedback</span>
         </a>
       </div>
     </div>

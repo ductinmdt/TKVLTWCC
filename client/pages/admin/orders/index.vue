@@ -15,82 +15,87 @@
                 >
               </div>
               <div class="col-12 table-responsive">
-                <div v-for="order in orders"
-                  :key="order.orderstatus">
-                <br /> <hr>
-                <table
-                  class="
-                    table
-                    align-middle
-                    table-bordered
-                  "
-                >
-                  <thead>
+                <div v-for="order in orders" :key="order.orderstatus">
+                  <br />
+                  <hr />
+                  <table class="table align-middle table-bordered">
+                    <thead>
+                      <tr>
+                        <th colspan="4">ĐƠN HÀNG {{ order.orderid }}</th>
+                      </tr>
+                    </thead>
                     <tr>
-                      <th colspan="4">ĐƠN HÀNG {{ order.orderid }}</th>
+                      <td>Ngày đặt hàng</td>
+                      <td colspan="3">
+                        {{ order.orderdate }}
+                      </td>
                     </tr>
-                  </thead>
-                  <tr>
-                    <td>Ngày đặt hàng</td>
-                    <td colspan="3">
-                      {{ order.orderdate }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Tài khoản</td>
-                    <td colspan="3">
-                      {{ order.username }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Địa chỉ</td>
-                    <td colspan="3">
-                      {{ order.orderaddress }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <th>Tên sản phẩm:</th>
-                    <th>Giá:</th>
-                    <th>Số lượng:</th>
-                    <th>Hình ảnh:</th>
-                  </tr>
-                  <tr
-                    v-for="details in order.details"
-                    :key="details.productname"
-                  >
-                    <td class="align-middle">
-                      {{ details.productname }}
-                    </td>
-                    <th class="align-middle">{{ details.price }}$</th>
-                    <th class="align-middle">
-                      {{ details.quantity }}
-                    </th>
-                    <th>
-                      <a>
-                        <img
-                          src="details.img"
-                          alt=""
-                          height="100px"
-                          width="150px"
-                        />
-                      </a>
-                    </th>
-                  </tr>
-                  <tr>
-                    <th>Tổng giá:</th>
-                    <th colspan="2">K thấy tổng giá</th>
-                    <th>
-                      <span v-if="order.orderstatus === 'done'"
-                        ><button class="btn btn-success">Đã hoàn tất</button></span
-                      >
-                      <span v-else
-                        ><button class="btn btn-danger" @click="changeorderstatus(order.orderid)">
-                          Chưa xử lý
-                        </button></span
-                      >
-                    </th>
-                  </tr>
-                </table>
+                    <tr>
+                      <td>Tài khoản</td>
+                      <td colspan="3">
+                        {{ order.username }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Địa chỉ</td>
+                      <td colspan="3">
+                        {{ order.orderaddress }}
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Tên sản phẩm:</th>
+                      <th>Giá:</th>
+                      <th>Số lượng</th>
+                      <th>Hình ảnh</th>
+                    </tr>
+                    <tr
+                      v-for="details in order.details"
+                      :key="details.productname"
+                    >
+                      <td class="align-middle">
+                        {{ details.productname }}
+                      </td>
+                      <th class="align-middle">{{ details.price }}$</th>
+                      <th class="align-middle">
+                        {{ details.quantity }}
+                      </th>
+                      <th>
+                        <a>
+                          <img
+                            :src="details.img"
+                            alt=""
+                            height="100px"
+                            width="150px"
+                          />
+                        </a>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th>Tổng giá:</th>
+                      <th colspan="2">{{ order.total }}$</th>
+                      <th>
+                        <span v-if="order.orderstatus === 'done'"
+                          ><button class="btn btn-success">
+                            Đã hoàn tất
+                          </button></span
+                        >
+                        <span v-else-if="order.orderstatus === 'canceled'">
+                          <button class="btn btn-danger">
+                            Đã hủy
+                          </button>
+                        </span>
+                        <span v-else
+                          ><button
+                            class="btn btn-success"
+                            @click="changeorderstatus(order.orderid)"
+                          >
+                            Xử lý
+                          </button>
+                          <button class="btn btn-danger" @click="changeorderstatus(order.orderid, true)">Hủy</button></span
+                        >
+                      </th>
+                    </tr>
+                  </table>
                 </div>
               </div>
             </div>
@@ -108,7 +113,12 @@ export default {
     return { orders }
   },
   methods: {
-    async changeorderstatus(OrderID) {
+    async changeorderstatus(OrderID, cancelorder = false) {
+      if (cancelorder) {
+        await this.$axios.delete('adminorderview/', {
+          data: { orderid: OrderID },
+        })
+      }
       await this.$axios.post('adminorderview/', {
         orderid: OrderID,
       })

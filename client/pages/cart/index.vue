@@ -1,6 +1,5 @@
 <template>
   <div class="bg-color-brown">
-    {{ $auth.user.productincart }}
     <Header :brands="brands"></Header>
     <BannerTop />
     <div v-if=" $auth.user.productincart === 0" class="section pd-top-20">

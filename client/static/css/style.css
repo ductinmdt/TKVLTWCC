@@ -1287,7 +1287,6 @@ h3 {
   color: #000;
   font-size: 16px;
   display: block;
-
 }
 .product-btn{
   justify-content: space-between!important;
@@ -1409,7 +1408,7 @@ h3 {
 .section-gioithieu p{
   color: #00549d;
 }
-.form-lienhe table tbody tr td{
+.form-lienhe table  tr td{
   font-weight: 500;
   color: #000;
   padding: 5px 5px;
@@ -1544,7 +1543,7 @@ a{
 
 }
 .bg-white{
-  background-color: white;
+  background-color: white !important;
 }
 .section-dk .btn-primary{
   background-color: #546ce8;
@@ -1760,6 +1759,9 @@ a{
 }
 .align-middle-dt td{
   vertical-align: middle !important;
+}
+.ductinmdt{
+  max-width: 100px;
 }
 
 

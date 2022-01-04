@@ -1,10 +1,10 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user
 from rest_framework.reverse import reverse
 import requests
+from rest_framework_simplejwt import *
 import re
 from django.contrib.auth.models import User
 from rest_framework.response import Response
-from rest_framework import viewsets
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.permissions import *
 from .serializers import *
@@ -15,12 +15,12 @@ def login(request):
     username= request.data.get('username')
     password= request.data.get('password')
     if not User.objects.filter(username=username).exists() or User.objects.filter(email=username).exists():
-        raise  exceptions.AuthenticationFailed('User does not exist')
+        raise  exceptions.AuthenticationFailed()
     if User.objects.filter(email=username).exists():
         username=User.objects.get(email=username).username
     user = authenticate(username=username, password=password)
     if user is None:
-        raise exceptions.AuthenticationFailed({ 'error' :'Incorred password'})
+        raise exceptions.AuthenticationFailed()
     token_endpoint = reverse(viewname='token_obtain_pair',request=request)
     token = requests.post(token_endpoint, data=request.data).json()
     response = Response()
@@ -39,7 +39,6 @@ def validpassword(p):
     
 @api_view(['POST'])
 def register(request):
-    print(request.data)
     user = request.data.get('user')
     username= user['username']
     email= user['email']
@@ -78,12 +77,10 @@ def ProductbycodeView(request,code):
 
 @api_view(['POST'])    
 def Productfilter(request):
-    filterdata = "%" +request.data.get('filterdata')+"%"
+    filterdata = "%" +request.data.get('filterdata')+"%" # %9%
     try:
         queryset=Product.objects.raw('''SELECT * FROM core_product WHERE Name LIKE %s''',[filterdata])
-        print(queryset)
-        serializers=ProductSerializer(queryset,many=True,context={'request': request})
-        print(serializers.data) 
+        serializers=ProductSerializer(queryset,many=True,context={'request': request}) 
         return Response(serializers.data)
     except:
         return Response({'status':'failed'})
@@ -91,7 +88,7 @@ def Productfilter(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def Addtocart(request):
-    productname= request.data.get('productname')
+    productname= request.data.get('productname')   
     username= request.user.username
     queryset = Product.objects.filter(name=productname)
     serializers=ProductSerializer(queryset,many=True,context={'request': request}).data[0]
@@ -103,8 +100,7 @@ def Addtocart(request):
         Cartdetails.objects.create(productname=productname,price=price,username=username,img=img)
         carttotal=Cart.objects.get(username=username).carttotal+price
         Cart.objects.filter(username=username).update(carttotal=carttotal)
-    return Response({'status': 'success'})
-
+    return Response()
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -123,7 +119,7 @@ def OrdersView(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def userview(request):
-    username= request.user.username
+    username= request.user
     queryset = User.objects.filter(username=username)
     serializers = UserSerializer(queryset,many=True)
     user =serializers.data[0]
@@ -136,12 +132,9 @@ def userview(request):
     queryimg = Profile.objects.filter(username=username)
     try:
         profile = ProfileSerializer(queryimg,many=True,context={'request': request}).data[0]
-        print("this line run smoth")
     except:
         Profile.objects.create(username=username)
         profile = ProfileSerializer(queryimg,many=True,context={'request': request}).data[0]
-        print("ops it jump to this")
-    print (profile['img'])
     user["img"] = profile['img']
     response = Response()
     response.data ={
@@ -152,7 +145,6 @@ def userview(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def changecartdetails(request):
-    print(request.data)
     data = request.data.get('data')
     productname = data['productname']
     operator = data['operator']
@@ -185,11 +177,13 @@ def logout(request):
 def Checkout(request):
     address=request.data.get('address')
     username= request.user.username
-    order= Orders.objects.create(username=username,orderstatus='pending',orderaddress=address)
+    total =Cart.objects.get(username=username).carttotal
+    order= Orders.objects.create(username=username,orderstatus='pending',orderaddress=address,total=total)
     queryset = Cartdetails.objects.filter(username=username)
     items = CartdetailsSerializer(queryset,many=True).data
     for item in items:
-        Orderdetails.objects.create(orderid=order.orderid,productname=item['productname'],quantity=item['quantity'],price=item['price'])
+        imgurl = Product.objects.get(name=item['productname']).img
+        Orderdetails.objects.create(orderid=order.orderid,productname=item['productname'],quantity=item['quantity'],price=item['price'],img=imgurl)
     Cartdetails.objects.filter(username=username).delete()
     Cart.objects.filter(username=username).update(carttotal=0)
     return Response({'status': 'pending'})
@@ -218,18 +212,22 @@ def BrandView(request):
     serializers=BrandSerializer(queryset,many=True,context={'request': request}).data
     return Response(serializers)
 
-@api_view(['GET','POST'])
+@api_view(['GET','POST','DELETE'])
 @permission_classes([IsAdminUser])
 def AdminOrderView(request):
     if request.method == 'GET':
         queryset=Orders.objects.all().order_by('-orderdate')
         orders = OrdersSerializer(queryset,many=True).data
         for order in orders:
-            queryset= Orderdetails.objects.filter(orderid=order['orderid'])
-            details = OrderdetailsSerializer(queryset,many=True).data
+            orderid =order['orderid']
+            user = User.objects.get(username=order['username'])
+            name = user.first_name + ' ' + user.last_name
+            order['username']= name
+            queryset= Orderdetails.objects.filter(orderid=orderid)
+            details = OrderdetailsSerializer(queryset,many=True,context={'request': request}).data
             order['details']=details
         return Response(orders)
-    else:
+    elif request.method == 'POST':
         orderid = request.data.get('orderid')
         order = Orders.objects.get(orderid=orderid)
         if order.orderstatus == 'pending':
@@ -239,33 +237,107 @@ def AdminOrderView(request):
             order.orderstatus = 'done'
             order.save()
         return Response()
+    elif request.method == 'DELETE':
+        orderid = request.data.get('orderid')
+        Orders.objects.filter(orderid=orderid).update(orderstatus='canceled')
+        return Response({'status':'cancel success'})
 
-# class AdminProductView(viewsets.ModelViewSet):
-#     serializer_class = ProductSerializer
-#     queryset = Product.objects.all()
+@api_view(['POST','DELETE','PUT'])
+@permission_classes([IsAdminUser])
+def productadminview(request):
+    if request.method == 'DELETE':
+        productid = request.data.get('productid')
+        Product.objects.filter(id=productid).delete()
+        return Response()
+    else:
+        productcode = request.data.get('productcode')
+        name = request.data.get('name')
+        price = request.data.get('price')
+        description = request.data.get('description')
+        stock = request.data.get('stock')
+        brandid = request.data.get('brandname')
+        brand = Brand.objects.get(id=brandid)
+        img = request.data.get('img')
+        productid = request.data.get('id')
+        if request.method == 'PUT':
+            if (Product.objects.filter(productcode=productcode).exists()) == False and (Product.objects.filter(name=name).exists())==False :
+                Product.objects.create(productcode=productcode, name=name,price=price, description=description,img=img, brandname=brand,stock=stock)
+                return Response()
+            else:
+                return Response({'status': 'Productcode or Productname alrealdy exist'})
+        if request.method == 'POST':
+            print('---------')
+            print(request.FILES['img'])
+            print('---------')
+            Product.objects.filter(id=productid).delete()
+            Product.objects.create(id=productid,productcode=productcode,name=name,price=price,img=img,description=description,stock=stock,brandname=brand)
+            return Response()
+@api_view(['POST'])
+def submitFeed(request):
+    feedback = request.data.get('feedback')
+    try:
+        Feedback.objects.create(topic=feedback['topic'],title=feedback['title'],name=feedback['name'],email=feedback['email'],phone=feedback['phone'],des=feedback['des'])
+    except:
+        return Response({'status':'An error occurred while sending data. please try again later'})
+    return Response({'status':'Your feedback has been noted. Staff will be in touch shortly to respond.'})
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def feedbackView(request):
+    queryset = Feedback.objects.all().order_by('-id')
+    serializers = FeedbackSerializer(queryset,many=True)
+    return Response(serializers.data)
+
+
+@api_view(['GET','POST'])
+@permission_classes([IsAuthenticated])
+def userorders(request):
+    if request.method == 'GET':
+        username = request.user.username
+        queryset =Orders.objects.filter(username= username).order_by('-orderdate')
+        orders =OrdersSerializer(queryset,many=True).data
+        if len(orders) < 0:
+            return Response()
+        else:
+            for order in orders:
+                queryset =Orderdetails.objects.filter(orderid=order['orderid'])
+                details =OrderdetailsSerializer(queryset,many=True).data 
+                order['details'] = details
+            return Response(orders)
+    else:
+        orderid =request.data.get('orderid')
+        Orders.objects.filter(orderid=orderid).update(orderstatus='canceled')
+        return Response({'status':'Your order has been successfully canceled'})
 
 @api_view(['POST'])
-def productadminview(request):
-    trequest = request.data.get('type')
-    productcode = request.data.get('productcode')
-    name = request.data.get('name')
-    price = request.data.get('price')
-    description = request.data.get('description')
-    stock = request.data.get('stock')
-    brandid = request.data.get('brandname')
-    brand = Brand.objects.get(id=brandid)
-    img = request.data.get('img')
-    productid = request.data.get('id')
-    if trequest == 'x':
-        Product.objects.filter(id=productid).delete()
-        return Response({'status':'delete sucessful'})
-    if trequest == '+':
-        if (Product.objects.filter(productcode=productcode).exists()) == False and (Product.objects.filter(name=name).exists())==False :
-            Product.objects.create(productcode=productcode, name=name,price=price, description=description,img=img, brandname=brand,stock=stock)
-            return Response({'status': 'success'})
-        else:
-            return Response({'status': 'Productcode or Productname alrealdy exist'})
-    elif trequest == 'e':
-        return Response({'status':'well done'})
- 
-    
+@permission_classes([IsAuthenticated])
+def updateuser(request):
+    user = request.data
+    print('##')
+    print(user)
+    print('##')
+    User.objects.filter(username=user['username']).update(email=user['email'],first_name=user['first_name'],last_name=user['last_name'])
+    Profile.objects.create(username='temp',img=user['img'])
+    Profile.objects.filter(username='temp').delete()
+    Profile.objects.filter(username=user['username']).update(img=user['img'])
+    return Response()
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def changepassword(request):
+    print('is this piece of shit run?')
+    print(request.data)
+    username =request.user
+    new_password = request.data.get('new_password')
+    rnew_password = request.data.get('rnew_password')
+    user = User.objects.get(username=username)
+    if user.check_password(request.data.get('password')) ==False:
+        return Response({'status':'Incorrect Password'})
+    else:
+        if not new_password == rnew_password:
+            return Response({'status':'New Password not match'})
+        elif not validpassword(new_password):
+            return Response({'status':'Password not strong enough'})
+    user.set_password(new_password)
+    user.save()
+    return Response({'status':'success'})

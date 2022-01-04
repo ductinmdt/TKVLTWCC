@@ -11,7 +11,7 @@
               </a>
             </div>
             <div class="logout-adm mg-right-20">
-              <a href="">
+              <a class="cursor-poin" @click="logout">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Logout</span>
               </a>
@@ -22,3 +22,15 @@
     </div>
   </div>
 </template>
+<script>
+export default {
+  methods: {
+    async logout() {
+      await this.$auth.logout(/* .... */)
+      window.localStorage.clear()
+      // console.log($cookies.keys());
+    },
+  }
+  
+}
+</script>

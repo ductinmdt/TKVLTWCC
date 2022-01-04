@@ -126,7 +126,7 @@
             <div class="item-account dp-flex">
               <i class="fas fa-user-circle"></i>
               <h5 v-if="$auth.loggedIn">
-                <a href="" class="no-decoration" style="color: #fff"
+                <a href="http://localhost:3000/user" class="no-decoration" style="color: #fff"
                   >TÀI KHOẢN</a
                 >
                 <div class="dn-dk">
@@ -141,7 +141,7 @@
                       <div class="dropdown-cart-header">
                         <span>
                           <a
-                            href=""
+                            href="http://localhost:3000/user/orders"
                             style="float: left; no-decoration; font-size: 16px; font-weight: 700"
                             class="no-decoration"
                             >Lịch sử đơn hàng</a
@@ -259,7 +259,7 @@
                       >
                     </li>
                     <li class="nav-item">
-                      <a href="" aria-label="Toggle navigation">Giới thiệu</a>
+                      <a href="http://localhost:3000/introduction" aria-label="Toggle navigation">Giới thiệu</a>
                     </li>
                     <li class="nav-item">
                       <a class="dd-menu collapsed" href="http://localhost:3000"
@@ -270,7 +270,7 @@
                       <a href="#" aria-label="Toggle navigation">Blog</a>
                     </li>
                     <li class="nav-item">
-                      <a href="" aria-label="Toggle navigation">Liên hệ</a>
+                      <a href="http://localhost:3000/feedback" aria-label="Toggle navigation">Liên hệ</a>
                     </li>
                   </ul>
                 </div>

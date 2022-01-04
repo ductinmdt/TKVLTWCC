@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header />
+    <Header  :brands="brands"></Header>
     <div class="section pd-top-20">
 		<div class="container">
 			<div class="row ">
@@ -82,7 +82,8 @@ export default {
     const product = await $axios.$get(`/products/${params.id}`)
     const products = await $axios.$get(`/products`)
     const details = product.description.split('- ')
-    return { product, products, details }
+    const brands = await $axios.$get('/brand/')
+    return { product, products, details, brands }
   },
   methods: {
     getsortname(name) {
@@ -92,6 +93,14 @@ export default {
     getproductsurl(productid) {
       const url = '/products/' + productid
       return url
+    },
+    filterproducts(searchinput){
+      if (searchinput === '') {
+        return "/products"
+      }
+      else {
+        return"/products/filter/"+ searchinput
+      }
     },
     async addtocart(ProductName) {
       if (this.$auth.loggedIn) {

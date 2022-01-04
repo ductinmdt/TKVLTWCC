@@ -100,7 +100,6 @@
                         <td></td>
                         <td>
                           <button class="btn btn-success" @click="submitProduct">Add</button>
-                          
                         </td>
                       </tr>
                     </table>
@@ -113,74 +112,68 @@
       </div>
     </div>
 
+
+    
   </div>
 </template>
 
 <script>
 export default {
-  async asyncData({ $axios }) {
-    const brands = await $axios.$get('/brand/')
-    return { brands }
-  },
-  data() {
+    async asyncData({ $axios}){
+      const brands = await $axios.$get('/brand/')
+      return {brands}
+    },  
+    data() {
     return {
       product: {
-        productcode: '',
-        name: '',
-        img: '',
-        price: '',
-        description: '',
-        stock: '',
-        brandname: '',
-        type: '+',
+        productcode:"",  
+        name: "",
+        img: "",
+        price: "",
+        description: "",
+        stock: "",
+        brandname: "",
+        type:'+'
       },
-      preview: '',
-    }
+      preview: ""
+    };
   },
   head() {
     return {
-      title: 'Add Product',
-    }
+      title: "Add Product"
+    };
   },
   methods: {
     onFileChange(e) {
-      const files = e.target.files || e.dataTransfer.files
+      const files = e.target.files || e.dataTransfer.files;
       if (!files.length) {
-        return
+        return;
       }
-      this.product.img = files[0]
-      this.createImage(files[0])
+      this.product.img = files[0];
+      this.createImage(files[0]);
     },
     createImage(file) {
-      const reader = new FileReader()
-      const vm = this
-      reader.onload = (e) => {
-        vm.preview = e.target.result
-      }
-      reader.readAsDataURL(file)
+      const reader = new FileReader();
+      const vm = this;
+      reader.onload = e => {
+        vm.preview = e.target.result;
+      };
+      reader.readAsDataURL(file);
     },
     async submitProduct() {
       const config = {
-        headers: { 'content-type': 'multipart/form-data' },
-      }
-      const formData = new FormData()
+        headers: { "content-type": "multipart/form-data" }
+      };
+      const formData = new FormData();
       for (const data in this.product) {
-        formData.append(data, this.product[data])
+        formData.append(data, this.product[data]);
       }
       try {
-        const response = await this.$axios.$post(
-          '/productadminview/',
-          formData,
-          config
-        )
-        console.log(response)
+        await this.$axios.$put("/productadminview/",formData,config);
+        this.$router.push('/admin/products/')
       } catch (e) {
-        console.log(e)
       }
-    },
-  },
-}
+    }
+  }
+};
 </script>
-
-<style scoped>
-</style>
