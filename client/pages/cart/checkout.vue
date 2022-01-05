@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="bg-color-brown section-checkout">
-      <Header :brands="brands"></Header>
+      <Header :preview="preview" :brands="brands"></Header>
       <BannerTop />
       <div class="section pd-top-20">
         <div class="container">

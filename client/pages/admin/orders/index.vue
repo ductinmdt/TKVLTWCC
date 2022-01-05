@@ -74,24 +74,38 @@
                       <th>Tổng giá:</th>
                       <th colspan="2">{{ order.total }}$</th>
                       <th>
-                        <span v-if="order.orderstatus === 'done'"
-                          ><button class="btn btn-success">
-                            Đã hoàn tất
-                          </button></span
+                        <span
+                          class="text-success"
+                          v-if="order.orderstatus === 'done'"
                         >
-                        <span v-else-if="order.orderstatus === 'canceled'">
-                          <button class="btn btn-danger">
-                            Đã hủy
-                          </button>
+                          Đã hoàn tất
+                        </span>
+                        <span
+                          class="text-danger"
+                          v-else-if="order.orderstatus === 'canceled'"
+                        >
+                          Đã hủy
                         </span>
                         <span v-else
-                          ><button
+                          ><button v-if="order.orderstatus === 'pending'"
                             class="btn btn-success"
                             @click="changeorderstatus(order.orderid)"
                           >
-                            Xử lý
+                            Xác nhận đơn hàng
                           </button>
-                          <button class="btn btn-danger" @click="changeorderstatus(order.orderid, true)">Hủy</button></span
+                          <button v-if="order.orderstatus === 'confirmed'"
+                            class="btn btn-success"
+                            @click="changeorderstatus(order.orderid)"
+                          >
+                            Xử lý đơn hàng
+                          </button>
+                          
+                          <button
+                            class="btn btn-danger"
+                            @click="changeorderstatus(order.orderid, true)"
+                          >
+                            Hủy
+                          </button></span
                         >
                       </th>
                     </tr>
@@ -103,7 +117,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 <script>

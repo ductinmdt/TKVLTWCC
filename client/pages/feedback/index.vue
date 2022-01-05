@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header :brands="brands"></Header>
+    <Header :preview="preview" :brands="brands"></Header>
     <BannerTop />
     <div class="section section-lienhe pd-top-20">
       <div class="container">

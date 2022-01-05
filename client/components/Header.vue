@@ -124,7 +124,8 @@
               <h5>Hotline: <span>1900 1234</span></h5>
             </div>
             <div class="item-account dp-flex">
-              <i class="fas fa-user-circle"></i>
+              <img v-if="$auth.loggedIn" class="preview-img" :src="$auth.user.img" width="40px" height="40" />
+              <i v-else class="fas fa-user-circle"></i>
               <h5 v-if="$auth.loggedIn">
                 <a href="http://localhost:3000/user" class="no-decoration" style="color: #fff"
                   >TÀI KHOẢN</a
@@ -318,7 +319,7 @@
 <script>
 export default {
   auth: 'guest ',
-  props: ['brands'],
+  props: ['brands' ],
   data() {
     return {
       searchinput: '',

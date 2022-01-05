@@ -1763,7 +1763,9 @@ a{
 .ductinmdt{
   max-width: 100px;
 }
-
+.preview-img{
+  border-radius: 50%;
+}
 
 
 

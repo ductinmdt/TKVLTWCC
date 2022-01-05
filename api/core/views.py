@@ -301,7 +301,7 @@ def userorders(request):
         else:
             for order in orders:
                 queryset =Orderdetails.objects.filter(orderid=order['orderid'])
-                details =OrderdetailsSerializer(queryset,many=True).data 
+                details =OrderdetailsSerializer(queryset,many=True,context={'request': request}).data 
                 order['details'] = details
             return Response(orders)
     else:
@@ -313,10 +313,9 @@ def userorders(request):
 @permission_classes([IsAuthenticated])
 def updateuser(request):
     user = request.data
-    print('##')
-    print(user)
-    print('##')
     User.objects.filter(username=user['username']).update(email=user['email'],first_name=user['first_name'],last_name=user['last_name'])
+    if type(user['img']) == type(''):
+        return Response()
     Profile.objects.create(username='temp',img=user['img'])
     Profile.objects.filter(username='temp').delete()
     Profile.objects.filter(username=user['username']).update(img=user['img'])

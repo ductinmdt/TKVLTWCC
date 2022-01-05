@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Header :brands="brands"></Header>
+    <Header :preview="preview" :brands="brands"></Header>
     <BannerTop />
     <Brand :brands="brands"></Brand>
     <New-products :newproducts="newproducts"></New-products>
