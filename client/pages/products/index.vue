@@ -1,52 +1,25 @@
 <template>
   <div>
-    <div class="section">
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
-            <div class="block__header">
-              <h2 class="block-header-title text-center">SẢN PHẨM MỚI VỀ</h2>
-            </div>
-          </div>
-          <div
-            v-for="product in products"
-            :key="product.productcode"
-            class="col-lg-3 col-md-4 col-6 items-product mg-bt-30"
-          >
-            <div class="product-img">
-              <a :href="getproductsurl(product.productcode)">
-                <img
-                  :src="product.img"
-                  alt=""
-                  class="img-fluid rounded mx-auto d-block"
-                />
-              </a>
-            </div>
-            <div class="product-info">
-              <a :href="getproductsurl(product.productcode)">
-                <h6>{{ getsortname(product.name).name }}...</h6>
-              </a>
-              <span>{{ product.price }}$</span>
-              <button
-                type="button"
-                class="btn btn-danger add-to-cart col-12"
-                @click="addtocart(product.name)"
-              >
-                Mua Ngay
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Header :preview="preview" :brands="brands"></Header>
+    <BannerTop />
+    <Brand :brands="brands"></Brand>
+    <New-products :newproducts="newproducts"></New-products>
+    <Instock-products :instockproducts="instockproducts"></Instock-products>
+    <Hot-products :hotproducts="hotproducts"></Hot-products>
+    <Top-footer />
+    <Footer />
   </div>
 </template>
+
 <script>
 export default {
   auth: 'guest',
-  async asyncData({ $axios, params }) {
-    const products = await $axios.$get(`/products/`)
-    return { products }
+  async asyncData({ $axios }) {
+    const brands = await $axios.$get('/brand/')
+    const newproducts = await $axios.$get('/newproducts/')
+    const instockproducts = await $axios.$get('/instockproducts/')
+    const hotproducts = await $axios.$get('/hotproducts/')
+    return { newproducts, instockproducts, hotproducts, brands }
   },
   methods: {
     getsortname(name) {
@@ -57,6 +30,26 @@ export default {
       const url = '/products/' + productid
       return url
     },
+    async addtocart(ProductName) {
+      if(this.$auth.loggedIn){
+        await this.$axios.$post('addtocart/', {
+        productname: ProductName,
+      })
+      this.$nuxt.refresh();
+      this.$router.go()
+      }
+      else{
+        this.$router.push('/login/');
+      }
+    },
+    filterproducts(searchinput){
+      if (searchinput === '') {
+        return "/products"
+      }
+      else {
+        return"/products/filter/"+ searchinput
+      }
+    }
   },
 }
 </script>
