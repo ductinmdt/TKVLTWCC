@@ -1766,7 +1766,13 @@ a{
 .preview-img{
   border-radius: 50%;
 }
-
+.pd-10{
+  padding: 15px !important;
+}
+.add-pr{
+  width: 150px;
+  height: 100px;
+}
 
 
 

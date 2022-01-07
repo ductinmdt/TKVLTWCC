@@ -17,7 +17,7 @@
                 <img
                   :src="product.img"
                   alt=""
-                  class="img-fluid rounded mx-auto d-block"
+                  class="img-fluid rounded mx-auto d-block pd-10"
                 />
               </a>
             </div>

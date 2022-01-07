@@ -45,7 +45,7 @@
                     <td>{{ product.price }}$</td>
                     <td>{{ product.description }}</td>
                     <td>
-                      <img :src="product.img" />
+                      <img :src="product.img" class="add-pr"/>
                     </td>
                     <td>{{ product.stock }}</td>
                     <td>

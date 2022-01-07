@@ -67,7 +67,7 @@
 </template>
 <script>
 export default {
-  auth: 'guest',
+  auth: 'guest auth',
   async asyncData({ $axios }) {
     const brands = await $axios.$get('/brand/')
     return {  brands }
