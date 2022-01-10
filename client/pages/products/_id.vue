@@ -1,37 +1,42 @@
 <template>
   <div>
-    <Header  :brands="brands"></Header>
+    <Header :brands="brands"></Header>
     <div class="section pd-top-20">
-		<div class="container">
-			<div class="row ">
-				<div class=" col-md-6 col-12">
-			  	<img class="item img-fluid" :src="product.img" :alt="product.productid"/>
-		    </div>
-		    <div class=" col-md-6 col-12 info-product-right align-items-center">
-			    <h4>{{ product.name }}</h4>
-		      <div>
-			      	<span class="price">{{ product.price}}$</span>
-                  
-		      </div>
-		    	<ul class="review">
-                <li><i class="lni lni-star-filled"></i></li>
-                <li><i class="lni lni-star-filled"></i></li>
-                <li><i class="lni lni-star-filled"></i></li>
-                <li><i class="lni lni-star-filled"></i></li>
-                <li><i class="lni lni-star-filled"></i></li>
-                <li><span>5.0</span></li>
-            </ul>		
-		        <hr/>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6 col-12">
+            <img
+              class="item img-fluid"
+              :src="product.img"
+              :alt="product.productid"
+            />
+          </div>
+          <div class="col-md-6 col-12 info-product-right align-items-center">
+            <h4>{{ product.name }}</h4>
+            <div>
+              <span class="price">{{ product.price }}$</span>
+            </div>
+            <ul class="review">
+              <li><i class="lni lni-star-filled"></i></li>
+              <li><i class="lni lni-star-filled"></i></li>
+              <li><i class="lni lni-star-filled"></i></li>
+              <li><i class="lni lni-star-filled"></i></li>
+              <li><i class="lni lni-star-filled"></i></li>
+              <li><span>5.0</span></li>
+            </ul>
+            <hr />
             <div class="product-info-items">
               <p v-for="detail in details" :key="detail">{{ detail }}</p>
               <p v-if="product.stock > 1"><b>Còn Hàng</b></p>
-              <p v-else> <b>Hết Hàng</b> </p>
-              <button class="btn btn-danger" @click="addtocart(product.name)">MUA HÀNG</button>
+              <p v-else><b>Hết Hàng</b></p>
+              <button class="btn btn-danger" @click="addtocart(product.name)">
+                MUA HÀNG
+              </button>
             </div>
+          </div>
+        </div>
       </div>
-      </div>
-		</div>
-	</div>
+    </div>
     <div class="section">
       <div class="container">
         <div class="row">
@@ -94,12 +99,11 @@ export default {
       const url = '/products/' + productid
       return url
     },
-    filterproducts(searchinput){
+    filterproducts(searchinput) {
       if (searchinput === '') {
-        return "/products"
-      }
-      else {
-        return"/products/filter/"+ searchinput
+        return '/products'
+      } else {
+        return '/products/filter/' + searchinput
       }
     },
     async addtocart(ProductName) {

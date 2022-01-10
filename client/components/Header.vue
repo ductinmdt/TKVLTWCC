@@ -263,7 +263,7 @@
                       <a href="http://localhost:3000/introduction" aria-label="Toggle navigation">Giới thiệu</a>
                     </li>
                     <li class="nav-item">
-                      <a class="dd-menu collapsed" href="http://localhost:3000"
+                      <a class="dd-menu collapsed" href="http://localhost:3000/products"
                         >Sản phẩm</a
                       >
                     </li>

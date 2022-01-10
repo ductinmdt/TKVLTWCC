@@ -61,6 +61,17 @@ export default {
       const url = '/products/' + productid
       return url
     },
+    async addtocart(ProductName) {
+      if (this.$auth.loggedIn) {
+        await this.$axios.$post('addtocart/', {
+          productname: ProductName,
+        })
+        this.$nuxt.refresh()
+        this.$router.go()
+      } else {
+        this.$router.push('/login/')
+      }
+    },
   },
 }
 </script>

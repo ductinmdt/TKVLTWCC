@@ -118,6 +118,8 @@ export default {
         orderid: id,
       })
       console.log(response)
+      this.$nuxt.refresh()
+      this.$router.go()
     },
   },
 }
